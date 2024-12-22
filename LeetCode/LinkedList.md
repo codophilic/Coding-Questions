@@ -6,7 +6,7 @@
 
 - Given `head`, the head of a linked list, determine if the linked list has a cycle in it. There is a cycle in a linked list if there is some node in the list that can be reached again by continuously following the next pointer.
 
-- Example 1
+- Example 1:
 
 ![alt text](image.png)
 
@@ -16,7 +16,7 @@ Output: true
 Explanation: There is a cycle in the linked list, where the tail connects to the 1st node (0-indexed).
 ```
 
-- Example 2
+- Example 2:
 
 ![alt text](image-1.png)
 
@@ -86,11 +86,18 @@ public class Solution {
 }
 ```
 
-#### 2. Tortoise and Hare algorithm (Two Pointer)
+#### 2. Tortoise and Hare algorithm OR Floyd’s cycle finding algorithm (Two Pointer Approach)
 
+- The idea is to start with the two pointers slow and fast, both starting at the head of the linked list.
+- While traversing the List:
+    - slow pointer will move one step at a time.
+    - fast pointer moves two steps at a time.
+    - If there’s a cycle, the fast pointer will eventually catch up with the slow pointer within the cycle because it’s moving faster.
+    - If there’s no cycle, the fast pointer will reach the end of the list (i.e., it will become NULL).
+- When the slow and fast pointers meet, a cycle or loop exists.
 - Here, basically consider two pointer, one moves at a slowest pace (tortoise) and one moves at a fastest pace (hare). So in a circular track, when tortoise and hare starts their race, they gonna get align at one point of time.
 
-<video controls src="/2024-1.mp4" title="title"> </video>
+<video controls src="Images\LinkedList\2024-1.mp4" title="title"> </video>
 
 - Same concepts works to find out whether a linked list is cyclic or not. We will be having two pointers, the slowest pointer will iterate node by node, and the faster pointer will jump to alternates nodes. Thus when the fastest and the slowest pointer points the same node, we conclude the linked list is circular.
 - Python
@@ -147,6 +154,130 @@ public class Solution {
             slowest = slowest.next;
         }
         return false;
+    }
+}
+```
+
+## 2. [Happy Number](https://leetcode.com/problems/happy-number/description/)
+
+### Problem
+
+- Write an algorithm to determine if a number `n` is happy. A happy number is a number defined by the following process:
+    - Starting with any positive integer, replace the number by the sum of the squares of its digits.
+    - Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.
+    - Those numbers for which this process ends in 1 are happy.
+    - Return `true` if `n` is a happy number, and `false` if not.
+- Example 1:
+
+```
+Input: n = 19
+Output: true
+Explanation:
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+```
+
+- Example 2:
+
+```
+Input: n = 2
+Output: false
+```
+
+### Constraints
+
+- 1 <= `n` <= 2<sup>31</sup> - 1
+
+### Solution
+
+#### 1. Tortoise and Hare algorithm OR Floyd’s cycle finding algorithm (Two Pointer Approach)
+
+- The idea is to start with the two pointers slow and fast, both starting at the head of the linked list.
+- While traversing the List:
+    - slow pointer will move one step at a time.
+    - fast pointer moves two steps at a time.
+    - If there’s a cycle, the fast pointer will eventually catch up with the slow pointer within the cycle because it’s moving faster.
+    - If there’s no cycle, the fast pointer will reach the end of the list (i.e., it will become NULL).
+- When the slow and fast pointers meet, a cycle or loop exists.
+- Here, basically consider two pointer, one moves at a slowest pace (tortoise) and one moves at a fastest pace (hare). So in a circular track, when tortoise and hare starts their race, they gonna get align at one point of time.
+
+<video controls src="Images\LinkedList\2024-1.mp4" title="title"> </video>
+
+- Same concepts works to find out whether a the number is happy or not. When a number is not happy, the sum of squares of digit will always land up to the initial number it was or one of its following generated value, consider below example of unhappy number
+
+```
+4→16→37→58→89→145→42→20→4 (a cyclic loop)
+```
+
+- So here, we will have two pointers, the slowest pointer will normally compute sum of square of digit in each of it iterations, whereas the fastest pointer will compute sum of square of digit, one step ahead of the slowest pointer
+- Example
+
+```
+Slowest Pointer
+4→16→37→58→89→145→42→20→4
+
+Fastest Pointer
+4→37→89→42→4
+```
+
+- At one point of them, if the number is unhappy (cyclic detection), it will coincide with the same number of one of the generated number.
+- Python
+
+```
+class Solution(object):
+    def getSumOfSquaresOfDigit(self,n):
+        s=0
+        while(n):
+            d=n%10
+            s+=d*d
+            n=n//10
+        return s
+
+    def isHappy(self, n):
+        """
+        :type n: int
+        :rtype: bool
+        """
+        slow=fast=n
+        while(True):
+            slow=self.getSumOfSquaresOfDigit(slow)
+            fast=self.getSumOfSquaresOfDigit(self.getSumOfSquaresOfDigit(fast))
+            if(slow==1 or fast==1):
+                return True
+            if(slow==fast):
+                return False
+```
+
+- Java
+
+```
+class Solution {
+    public double getSumOfSquaresOfDigit(double n){
+        double s=0;
+        double d=0;
+        while(n>0){
+            d=n%10;
+            s+=(d*d);
+            n=(int)n/10;
+        }
+        return s;
+    }
+
+    public boolean isHappy(int n) {
+        double slow=n;
+        double fast=n;
+        while(true){
+            slow=getSumOfSquaresOfDigit(slow);
+            fast=getSumOfSquaresOfDigit(getSumOfSquaresOfDigit(fast));
+            if(slow==1 || fast==1){
+                return true;
+            }
+            if(slow==fast){
+                return false;
+            }
+        }
     }
 }
 ```
